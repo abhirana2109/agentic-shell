@@ -1,0 +1,11 @@
+.venv/
+venv/
+agent_brain/.venv/
+engine/.venv/
+
+__pycache__/
+*.pyc
+
+engine/interaction_log.jsonl
+
+.vscode/
