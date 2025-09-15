@@ -6,9 +6,9 @@ from typing import List
 
 # Configuration
 try:
-    genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 except KeyError:
-    print("FATAL: GOOGLE_API_KEY environment variable not set.")
+    print("FATAL: GEMINI_API_KEY environment variable not set.")
     exit()
 
 app = FastAPI()
