@@ -26,7 +26,7 @@ class UserQuery(BaseModel):
 
 # AI Logic
 generation_config = {"temperature": 0.2, "top_p": 1, "top_k": 1, "max_output_tokens": 2048}
-model = genai.GenerativeModel(model_name="gemini-1.5-flash", generation_config=generation_config)
+model = genai.GenerativeModel(model_name="gemini-2.5-flash", generation_config=generation_config)
 
 # The Upgraded Multi-Step Prompt
 PROMPT_TEMPLATE = """
