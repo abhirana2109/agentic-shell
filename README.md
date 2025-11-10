@@ -18,8 +18,11 @@ Tell the agent what you want to do, and it will plan and execute commands for yo
 
 ## Project Architecture
 
+This following diagram illustrates a hybrid architecture for the Agentic Shell project, separating the user-facing application from the heavy AI computation. The local application consists of a browser frontend for user interaction and a Python backend that manages a real shell process, orchestrating tasks in real-time via WebSockets.
+
 <img width="3134" height="766" alt="image" src="https://github.com/user-attachments/assets/7b539bbf-f6db-4754-8ca1-02512e29c3cc" />
 
+All intensive AI tasks, including model inference with Gemini/Qwen and speech-to-text, are offloaded to a scalable Lightning AI cloud backend through a unified API. This cloud backend also logs all interactions, which feeds into a distinct MLOps retraining pipeline that continuously fine-tunes and redeploys the models, creating a closed-loop system where the agent improves over time.
 
 ## Installation
 
