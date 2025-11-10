@@ -16,6 +16,11 @@ Tell the agent what you want to do, and it will plan and execute commands for yo
 -   **⚡ Real-Time Interaction:** Powered by WebSockets for instant command execution and output streaming.
 -   **🧠 Smart Context:** The AI analyzes your terminal's screen to provide context-aware plans and answers.
 
+## Project Architecture
+
+<img width="3134" height="766" alt="image" src="https://github.com/user-attachments/assets/7b539bbf-f6db-4754-8ca1-02512e29c3cc" />
+
+
 ## Installation
 
 ### 1. Prerequisites
