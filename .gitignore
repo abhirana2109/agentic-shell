@@ -1,11 +1,14 @@
-.venv/
-venv/
-agent_brain/.venv/
-engine/.venv/
-
+# Python
 __pycache__/
-*.pyc
 
-engine/interaction_log.jsonl
+# Virtual Environment
+.venv/
 
+# Environment Variable
+.env
+
+# IDE
 .vscode/
+
+# Python version
+.python-version

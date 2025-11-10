@@ -1,174 +1,121 @@
 # Agentic Shell
 
-Agentic Shell is a powerful, AI-powered terminal agent that lives in your native shell. It understands natural language and translates your intent into executable shell commands.
+> An AI-powered terminal assistant that runs in your browser, combining a traditional command-line with intelligent execution modes, multi-language voice support, and a real-time chat interface.
 
-Simply tell the agent what you want to accomplish, it will formulate a plan, show it to you for confirmation, and execute it step-by-step.
+Tell the agent what you want to do, and it will plan and execute commands for you, ask for clarification, or simply answer your questions.
 
-## Planned System Architecture to implement
-<img width="2980" height="1778" alt="picture" src="https://github.com/user-attachments/assets/1598f103-02c7-4a90-a68c-c56dd2e24a85" />
+## Features
 
-## Current Features
+-   **🌐 Browser-Based Interface:** A full-featured terminal and AI chat panel, side-by-side in your browser.
+-   **🎯 4 Intelligent Execution Modes:**
+    -   **Ask Mode:** Get instant answers and guidance without executing commands.
+    -   **Task Mode:** The agent proposes a plan for your approval before running anything.
+    -   **Auto Mode:** The agent plans and executes tasks autonomously.
+    -   **Iterative Mode:** The agent executes one command at a time, analyzing the output to decide its next move.
+-   **🎤 Multi-Language Voice Support:** Use your voice to give commands in 12 supported languages: English, Hindi, Bengali, Telugu, Marathi, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Odia, and Assamese.
+-   **⚡ Real-Time Interaction:** Powered by WebSockets for instant command execution and output streaming.
+-   **🧠 Smart Context:** The AI analyzes your terminal's screen to provide context-aware plans and answers.
 
-- **Natural Language to Command:** Convert plain English prompts into accurate shell commands.
-- **Multi-Step Task Execution:** Handles complex workflows by breaking them down into logical, sequential steps.
-- **Interactive Confirmation:** Always shows you the plan before executing anything, giving you full control to proceed, edit, or cancel.
-- **Data Collection:** Captures interaction data locally, building a dataset for future fine-tuning and MLOps.
+## Installation
 
-## Current Installation Process
+### 1. Prerequisites
 
-### 1. Clone the repository
+-   Python 3.12 or higher.
+-   `uv`: A fast Python package installer. Install it with:
+    ```bash
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    ```
+-   A **Lightning AI Backend URL** for AI and speech-to-text features.
+
+### 2. Clone and Install
+
+Clone the repository and run the interactive installation script.
 
 ```bash
 git clone https://github.com/abhirana2109/agentic-shell.git
 cd agentic-shell
+./install.sh
 ```
 
-### 2. System Prerequisites
+The script will:
+1.  Install all Python dependencies using `uv`.
+2.  Prompt you to enter your **Lightning AI backend URL**.
+3.  Create a `.env` file to store your configuration.
+4.  Optionally, create a global `agsh` command to start the server from anywhere.
 
-Ensure your system has the necessary base tools.
+## How to Run the Agent
+
+**If you created the global command during installation:**
+
+Open a terminal and simply run:
 ```bash
-sudo apt update && sudo apt upgrade -y
-sudo apt install -y python3 python3-pip curl
+agsh
 ```
-Next, install `uv`, a fast Python package manager that will be used for setting up environments.
+
+**Otherwise, run from the project directory:**
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+./start.sh
 ```
 
-### 3. Configure Your API Key
+Once the server is running, open your browser and navigate to **`http://localhost:8088`**.
 
-The agent requires a Google Gemini API key to communicate with the AI model.
+## Using the Agent
 
-1.  Get your key from [Google AI Studio](https://aistudio.google.com/app/apikey).
-2.  Add the key to your shell's configuration file. This makes it securely available to the agent.
-    ```bash
-    # For bash users (default on Ubuntu)
-    echo 'export GEMINI_API_KEY="YOUR_API_KEY_HERE"' >> ~/.bashrc
+1.  **Open the Web Interface:** Go to `http://localhost:8088`. You will see a terminal on the left and a chat panel on the right.
+2.  **Select a Mode:** Use the mode toggle button at the bottom to switch between `Ask`, `Task`, `Auto`, and `Iterative` modes.
+3.  **Choose a Model:** Switch between `Gemini` and `Qwen` AI models.
+4.  **Type Your Goal:** Enter a natural language command (e.g., *"list all docker containers running"*) into the input bar.
+5.  **Use Your Voice (Optional):**
+    -   Select a language from the dropdown.
+    -   Click the microphone icon to start and stop recording.
+    -   Your speech will be transcribed into the input field.
+6.  **Send:** Press Enter or click the send button to submit your request to the agent.
 
-    # For zsh users, use ~/.zshrc instead
-    # echo 'export GEMINI_API_KEY="YOUR_API_KEY_HERE"' >> ~/.zshrc
-    ```
-    Replace `YOUR_API_KEY_HERE` with your actual key.
+## Configuration
 
-3.  Apply the change to your current terminal session:
-    ```bash
-    # For bash
-    source ~/.bashrc
+The application is configured via a `.env` file created by the `install.sh` script.
 
-    # For zsh
-    # source ~/.zshrc
-    ```
+| Variable                | Description                                     | Default   |
+| ----------------------- | ----------------------------------------------- | --------- |
+| `LIGHTNING_UNIFIED_URL` | **Required.** Your Lightning AI backend URL.    | -         |
+| `HOST`                  | The host address for the server.                | `0.0.0.0` |
+| `PORT`                  | The port for the server.                        | `8088`    |
 
-### 4. Set Up Python Environments
+## Project Structure
 
-Now the dependencies for both the "Brain" (the AI server) and the "Engine" (the command-line tool) will be installed.
+The project is organized with a clear separation of concerns between the server, frontend, MLOps pipeline, and shared utilities.
 
-**A. Set up the Brain:**
-```bash
-cd agent_brain
-uv venv
-uv pip install -r requirements.txt
-cd ..
-```
+-   **`agentic-shell/` (Root Directory)**
+    -   **`main.py`**: The main entry point that launches the web server.
+    -   **`server.py`**: Initializes the `aiohttp` web app, Socket.IO server, and the core `bash` pseudo-terminal (PTY) process that powers the interactive shell.
+    -   **`config.py`**: A centralized configuration hub. It defines server settings, execution timeouts, supported languages, and contains all the prompt templates used to instruct the AI models.
+    -   **`ai_brain.py`**: The core AI logic module. It interfaces with the AI models to generate execution plans, make decisions in iterative mode, and formulate natural language answers.
+    -   **`socket_handlers.py`**: Manages all real-time communication. It defines WebSocket event listeners for user input, prompt requests, plan approvals, and voice transcription.
+    -   **`mode_handlers.py`**: Contains the specific logic for each of the four execution modes (Ask, Task, Auto, Iterative), orchestrating the interaction between the AI brain and the terminal.
+    -   **`lightning_client.py`**: A dedicated client for communicating with the Lightning AI cloud backend. It handles all outgoing API requests for AI generation and speech-to-text.
+    -   **`install.sh`**: An interactive installation script that sets up the Python environment, dependencies, and the `.env` configuration file.
+    -   **`start.sh`**: A helper script that activates the virtual environment and starts the web server.
+    -   **`agsh`**: A global launcher script that allows the user to start the server from any directory in their terminal.
+    -   **`pyproject.toml`**: Defines project metadata and dependencies according to modern Python packaging standards (PEP 621).
+    -   **`requirements.txt`**: A standard list of Python dependencies, primarily for compatibility and reference.
+    -   **`uv.lock`**: A lock file generated by `uv` to ensure deterministic and reproducible installation of all dependencies.
 
-**B. Set up the Engine:**
-```bash
-cd engine
-uv venv
-uv pip install -r requirements.txt
-cd ..
-```
+-   **`static/` (Frontend)**
+    -   **`index.html`**: The single HTML file that defines the structure of the web page, including the terminal and chat panels.
+    -   **`main.js`**: The heart of the frontend. It manages the terminal, Socket.IO connection, voice input, and all user interactions in the browser.
+    -   **`style.css`**: Custom CSS to style the layout, chat messages, control bar, and overall theme of the web interface.
 
-### 5. Create the `agent` Command
+-   **`utils/` (Shared Helpers)**
+    -   **`__init__.py`**: Makes the `utils` directory a Python package, enabling easier module imports.
+    -   **`logger.py`**: Manages structured logging and sends interaction data to the cloud backend for analysis and retraining.
+    -   **`messaging.py`**: Provides a simple helper function for sending formatted agent messages over WebSockets.
+    -   **`terminal_utils.py`**: A key utility for analyzing terminal output to intelligently detect when commands have finished executing.
 
-The final step is to create the `agent` command that you'll use to interact with the shell.
-
-1.  Open your shell's configuration file with a text editor.
-    ```bash
-    # For bash
-    nano ~/.bashrc
-
-    # For zsh
-    # nano ~/.zshrc
-    ```
-
-2.  Scroll to the very end of the file and add the following code block:
-    ```bash
-    # Terminal Agent Engine Ignition
-    agent() {
-        # Check if a prompt was provided
-        if [ -z "$1" ]; then
-            echo "Usage: agent <your prompt>"
-            return 1
-        fi
-        
-        # Define the absolute path to your project
-        # IMPORTANT: Replace the path below with your actual project path.
-        # (run 'pwd' inside the 'agentic-shell' folder to get the path)
-        local agent_dir="/path/to/your/agentic-shell"
-        
-        # Execute the engine with the provided prompt
-        "$agent_dir/engine/.venv/bin/python" "$agent_dir/engine/engine.py" "$@"
-    }
-    ```
-    **Crucially, replace `/path/to/your/agentic-shell` with the real, absolute path to your project folder.**
-
-3.  Save the file and exit (`Ctrl+X`, `Y`, `Enter`).
-
-## Current way to run the Agent
-
-The agent operates with two terminal windows: one for the AI Brain and one for you to use the agent.
-
-**Terminal 1 (Start the Brain):**
-This terminal will run the AI server. You must keep it running in the background.
-```bash
-# Navigate to the brain directory
-cd ~/agentic-shell/agent_brain
-
-# Activate its environment
-source .venv/bin/activate
-
-# Start the server
-uvicorn main:app --reload
-```
-You should see a message that the server is running on `http://127.0.0.1:8000`. **Leave this terminal open.**
-
-**Terminal 2 (Use the Agent):**
-Open a **new** terminal window.
-
-1.  First, activate the new `agent` command:
-    ```bash
-    # For bash
-    source ~/.bashrc
-
-    # For zsh
-    # source ~/.zshrc
-    ```
-    (You only need to do this once per new terminal, or it will be available automatically in any future terminals you open.)
-
-
-2.  Now, you can use the agent! An example below:-
-```bash
-    $ agent move all files less than ten mb into the files folder
-	🤖 Agent activated. Goal: move all files less than ten mb into the files folder
-	
-	📝 Agents Plan:
-	  Step 1:
-	    mkdir -p files
-	    ↳ Ensures the 'files' directory exists, creating it if necessary.
-	  Step 2:
-	    find . -maxdepth 1 -type f -size -10M -exec mv {} files/ \;
-	    ↳ Finds all files smaller than 10 megabytes in the current directory and moves them into the 'files' directory.
-	
-	Execute this plan? [y/n] y
-	
-	▶️  Executing Step: mkdir -p files
-	===== Executing =====
-	===== Done =====
-	
-	▶️  Executing Step: find . -maxdepth 1 -type f -size -10M -exec mv {} files/ \;
-	===== Executing =====
-	===== Done =====
-	
-	✅ Agent finished successfully.  
-```
+-   **`LightningAI/` (Cloud Backend & MLOps Pipeline)**
+    -   **`lightning_unified_backend.py`**: A single FastAPI application that serves as the project's external brain. It exposes endpoints for: LLM inference (routing to Gemini or Qwen), speech-to-text transcription, and receiving interaction logs for MLOps.
+    -   **`qwen_adapter.py`**: A compatibility layer that allows the backend to interact with a vLLM-hosted Qwen model using a Gemini-like interface, ensuring model interchangeability.
+    -   **`train_bash_agent.py`**: A script for the *initial* fine-tuning of the base Qwen model on a public dataset (`nl2bash`) to give it a strong foundation in command generation.
+    -   **`retraining.py`**: The core script for the continuous MLOps loop. It takes recent user interaction logs, formats them into a new dataset, and further fine-tunes the model.
+    -   **`merge_and_save.py`**: A utility script that merges the fine-tuned LoRA adapter (the result of retraining) back into the base model to create a new, standalone model.
+    -   **`deploy_api.py`**: A script to serve the newly merged model using the vLLM OpenAI-compatible API server, making it ready for inference.
+    -   **`pipeline.py`**: The master script that orchestrates the entire MLOps workflow, automatically running the `retraining`, `merge_and_save`, and `deploy_api` steps in sequence.
