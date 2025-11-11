@@ -24,6 +24,10 @@ This following diagram illustrates a hybrid architecture for the Agentic Shell p
 
 All intensive AI tasks, including model inference with Gemini/Qwen and speech-to-text, are offloaded to a scalable Lightning AI cloud backend through a unified API. This cloud backend also logs all interactions, which feeds into a distinct MLOps retraining pipeline that continuously fine-tunes and redeploys the models, creating a closed-loop system where the agent improves over time.
 
+## Screenshot
+<img width="1920" height="1020" alt="Screenshot 2025-11-11 224954" src="https://github.com/user-attachments/assets/f3bfbd64-a049-477a-b2b1-489d40f78635" />
+
+
 ## Installation
 
 ### 1. Prerequisites
